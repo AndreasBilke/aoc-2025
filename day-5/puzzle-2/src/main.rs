@@ -33,12 +33,18 @@ pub fn process(lines: &Vec<String>) -> usize {
         line.len() == 0
     });
     let db_ranges: Vec<String> = input_split.next().unwrap().to_vec();
-    let ranges = Database::from(&db_ranges);
+    let ranges: Vec<(u64, u64)> = db_ranges.iter().map(|l| {
+        let mut r = l.split("-");
+        let s: u64 = r.next().unwrap().parse().unwrap();
+        let e: u64 = r.next().unwrap().parse().unwrap();
 
-    let first_range = ranges.ranges.first().unwrap();
+        (s, e)
+    }).collect();
+
+    let first_range = ranges.first().unwrap();
     let mut range_set = range_set!((first_range.0)..=(first_range.1));
 
-    ranges.ranges.iter().for_each(|r| {
+    ranges.iter().for_each(|r| {
         let r = range_set!((r.0)..=(r.1));
 
         let new_r = range_set.union(&r);
@@ -46,24 +52,6 @@ pub fn process(lines: &Vec<String>) -> usize {
     });
 
     range_set.len()
-}
-
-pub struct Database {
-    ranges: Vec<(u64, u64)>
-}
-
-impl Database {
-    pub fn from(lines: &Vec<String>) -> Self {
-        let ranges: Vec<(u64, u64)> = lines.iter().map(|l| {
-            let mut r = l.split("-");
-            let s: u64 = r.next().unwrap().parse().unwrap();
-            let e: u64 = r.next().unwrap().parse().unwrap();
-
-            (s, e)
-        }).collect();
-
-        Database { ranges }
-    }
 }
 
 #[cfg(test)]
